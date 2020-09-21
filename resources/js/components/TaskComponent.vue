@@ -3,8 +3,7 @@
     <div class="row justify-content-center">
       <div class="col-md-8">
         <div class="card">
-          <div class="card-header">Tasks Component</div>
-
+          <div class="card-header"><add-task></add-task></div>
           <div class="card-body">
             <ul class="list-group">
               <li class="list-group-item" v-for="task in tasks.data" :key="task.id">{{ task.name }}</li>

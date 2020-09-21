@@ -14,7 +14,7 @@ class TaskController extends Controller
      */
     public function index()
     {
-        return response()->json(Task::paginate(1));
+        return response()->json(Task::paginate(3));
     }
 
     /**
@@ -35,7 +35,11 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $task = Task::create($request->all());
+        if($task)
+        {
+            return response()->json(Task::paginate(3));
+        }
     }
 
     /**

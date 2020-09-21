@@ -28,14 +28,13 @@
               <form>
                   <div class="from-group">
                       <label for="name">Name</label>
-                      <textarea class="form-control" name="name" id="" cols="2" rows="2"></textarea>
+                      <textarea class="form-control" name="name" id="" cols="2" rows="2" v-model="name"></textarea>
                   </div>
-                  <button class="btn btn-success mt-3">Add task</button>
               </form>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
+            <button type="button" @click="addTask" class="btn btn-primary">Save task</button>
           </div>
         </div>
       </div>
@@ -45,6 +44,23 @@
 
 <script>
 export default {
+  data(){
+    return {
+      name: ''
+    }
+  },
+  methods: {
+    addTask(){
+      axios.post('http://127.0.0.1:8000/task', 
+        {name: this.name})
+        .then(res => this.$emit('task-added', res))
+        .catch(error => console.log(error));
+      this.name = '';
+      $("#exampleModal").modal('hide');
+      $('body').removeClass('modal-open');
+      $(".modal-backdrop").remove();
+    }
+  },
   mounted() {
     console.log("Component mounted.");
   },

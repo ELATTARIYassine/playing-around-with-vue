@@ -2106,11 +2106,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       tasks: {},
-      idToEdit: ''
+      idToEdit: ""
     };
   },
   created: function created() {
@@ -2144,16 +2148,23 @@ __webpack_require__.r(__webpack_exports__);
       var newVal = this.$refs.taskUpdatedName[0].value;
 
       if (task.name != newVal) {
-        axios.put('http://127.0.0.1:8000/task/' + task.id, {
+        axios.put("http://127.0.0.1:8000/task/" + task.id, {
           name: newVal
         }).then(function (res) {
-          _this3.idToEdit = '';
-          newVal = '';
+          _this3.idToEdit = "";
+          newVal = "";
           _this3.tasks = res.data;
         });
       } else {
-        this.idToEdit = '';
+        this.idToEdit = "";
       }
+    },
+    deleteTask: function deleteTask(id) {
+      var _this4 = this;
+
+      axios["delete"]("http://127.0.0.1:8000/task/" + id).then(function (res) {
+        _this4.tasks = res.data;
+      });
     }
   }
 });
@@ -38647,45 +38658,60 @@ var render = function() {
                               domProps: { value: task.name }
                             })
                           ]
-                        : [
-                            _vm._v(
-                              "\n              " +
-                                _vm._s(task.name) +
-                                "\n            "
-                            )
-                          ],
+                        : [_vm._v(_vm._s(task.name))],
                       _vm._v(" "),
-                      _vm.idToEdit == task.id
-                        ? [
-                            _c("hr", { attrs: { width: "1", size: "500" } }),
-                            _vm._v(" "),
-                            _c(
-                              "button",
-                              {
-                                staticClass: "btn btn-success",
-                                on: {
-                                  click: function($event) {
-                                    return _vm.updateTask(task)
-                                  }
+                      _c(
+                        "div",
+                        [
+                          _vm.idToEdit == task.id
+                            ? [
+                                _c("hr", {
+                                  attrs: { width: "1", size: "500" }
+                                }),
+                                _vm._v(" "),
+                                _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-success",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.updateTask(task)
+                                      }
+                                    }
+                                  },
+                                  [_vm._v("update")]
+                                )
+                              ]
+                            : [
+                                _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-info",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.elToEdit(task)
+                                      }
+                                    }
+                                  },
+                                  [_vm._v("edit")]
+                                )
+                              ],
+                          _vm._v(" "),
+                          _c(
+                            "button",
+                            {
+                              staticClass: "btn btn-danger",
+                              on: {
+                                click: function($event) {
+                                  return _vm.deleteTask(task.id)
                                 }
-                              },
-                              [_vm._v("update")]
-                            )
-                          ]
-                        : [
-                            _c(
-                              "button",
-                              {
-                                staticClass: "btn btn-info",
-                                on: {
-                                  click: function($event) {
-                                    return _vm.elToEdit(task)
-                                  }
-                                }
-                              },
-                              [_vm._v("edit")]
-                            )
-                          ]
+                              }
+                            },
+                            [_vm._v("delete")]
+                          )
+                        ],
+                        2
+                      )
                     ],
                     2
                   )

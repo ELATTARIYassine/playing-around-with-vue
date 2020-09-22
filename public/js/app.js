@@ -2110,18 +2110,30 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       tasks: {},
-      idToEdit: ""
+      idToEdit: "",
+      doesDataExistInDB: true
     };
   },
   created: function created() {
     var _this = this;
 
     axios.get("http://127.0.0.1:8000/task").then(function (response) {
-      _this.tasks = response.data;
+      if (response.data.data.length != 0) {
+        _this.doesDataExistInDB = true;
+      } else {
+        _this.doesDataExistInDB = false;
+      }
+
+      _this.tasks = response.data; // if(response.data)
     })["catch"](function (err) {
       return console.log(err);
     });
@@ -2162,8 +2174,14 @@ __webpack_require__.r(__webpack_exports__);
     deleteTask: function deleteTask(id) {
       var _this4 = this;
 
-      axios["delete"]("http://127.0.0.1:8000/task/" + id).then(function (res) {
-        _this4.tasks = res.data;
+      axios["delete"]("http://127.0.0.1:8000/task/" + id).then(function (response) {
+        if (response.data.data.length != 0) {
+          _this4.doesDataExistInDB = true;
+        } else {
+          _this4.doesDataExistInDB = false;
+        }
+
+        _this4.tasks = response.data;
       });
     }
   }
@@ -38636,88 +38654,92 @@ var render = function() {
             "div",
             { staticClass: "card-body" },
             [
-              _c(
-                "ul",
-                { staticClass: "list-group" },
-                _vm._l(_vm.tasks.data, function(task) {
-                  return _c(
-                    "li",
-                    {
-                      key: task.id,
-                      staticClass:
-                        "list-group-item d-flex justify-content-between align-items-center"
-                    },
-                    [
-                      _vm.idToEdit == task.id
-                        ? [
-                            _c("input", {
-                              ref: "taskUpdatedName",
-                              refInFor: true,
-                              staticClass: "form-control",
-                              attrs: { type: "text" },
-                              domProps: { value: task.name }
-                            })
-                          ]
-                        : [_vm._v(_vm._s(task.name))],
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        [
-                          _vm.idToEdit == task.id
-                            ? [
-                                _c("hr", {
-                                  attrs: { width: "1", size: "500" }
-                                }),
+              _vm.doesDataExistInDB
+                ? [
+                    _c(
+                      "ul",
+                      { staticClass: "list-group" },
+                      _vm._l(_vm.tasks.data, function(task) {
+                        return _c(
+                          "li",
+                          {
+                            key: task.id,
+                            staticClass:
+                              "list-group-item d-flex justify-content-between align-items-center"
+                          },
+                          [
+                            _vm.idToEdit == task.id
+                              ? [
+                                  _c("input", {
+                                    ref: "taskUpdatedName",
+                                    refInFor: true,
+                                    staticClass: "form-control",
+                                    attrs: { type: "text" },
+                                    domProps: { value: task.name }
+                                  })
+                                ]
+                              : [_vm._v(_vm._s(task.name))],
+                            _vm._v(" "),
+                            _c(
+                              "div",
+                              [
+                                _vm.idToEdit == task.id
+                                  ? [
+                                      _c("hr", {
+                                        attrs: { width: "1", size: "500" }
+                                      }),
+                                      _vm._v(" "),
+                                      _c(
+                                        "button",
+                                        {
+                                          staticClass: "btn btn-success",
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.updateTask(task)
+                                            }
+                                          }
+                                        },
+                                        [_vm._v("update")]
+                                      )
+                                    ]
+                                  : [
+                                      _c(
+                                        "button",
+                                        {
+                                          staticClass: "btn btn-info",
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.elToEdit(task)
+                                            }
+                                          }
+                                        },
+                                        [_vm._v("edit")]
+                                      )
+                                    ],
                                 _vm._v(" "),
                                 _c(
                                   "button",
                                   {
-                                    staticClass: "btn btn-success",
+                                    staticClass: "btn btn-danger",
                                     on: {
                                       click: function($event) {
-                                        return _vm.updateTask(task)
+                                        return _vm.deleteTask(task.id)
                                       }
                                     }
                                   },
-                                  [_vm._v("update")]
-                                )
-                              ]
-                            : [
-                                _c(
-                                  "button",
-                                  {
-                                    staticClass: "btn btn-info",
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.elToEdit(task)
-                                      }
-                                    }
-                                  },
-                                  [_vm._v("edit")]
+                                  [_vm._v("delete")]
                                 )
                               ],
-                          _vm._v(" "),
-                          _c(
-                            "button",
-                            {
-                              staticClass: "btn btn-danger",
-                              on: {
-                                click: function($event) {
-                                  return _vm.deleteTask(task.id)
-                                }
-                              }
-                            },
-                            [_vm._v("delete")]
-                          )
-                        ],
-                        2
-                      )
-                    ],
-                    2
-                  )
-                }),
-                0
-              ),
+                              2
+                            )
+                          ],
+                          2
+                        )
+                      }),
+                      0
+                    )
+                  ]
+                : [_c("p", [_vm._v("No data found.")])],
               _vm._v(" "),
               _c("pagination", {
                 staticClass: "mt-3",
@@ -38725,7 +38747,7 @@ var render = function() {
                 on: { "pagination-change-page": _vm.getResults }
               })
             ],
-            1
+            2
           )
         ])
       ])

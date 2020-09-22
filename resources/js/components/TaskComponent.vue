@@ -7,7 +7,8 @@
             <add-task @task-added="refresh"></add-task>
           </div>
           <div class="card-body">
-            <ul class="list-group">
+            <template v-if="doesDataExistInDB">
+              <ul class="list-group">
               <li
                 class="list-group-item d-flex justify-content-between align-items-center"
                 v-for="task in tasks.data"
@@ -29,6 +30,10 @@
                 </div>
               </li>
             </ul>
+            </template>
+            <template v-else>
+              <p>No data found.</p>
+            </template>
             <pagination :data="tasks" @pagination-change-page="getResults" class="mt-3"></pagination>
           </div>
         </div>
@@ -43,13 +48,21 @@ export default {
     return {
       tasks: {},
       idToEdit: "",
+      doesDataExistInDB: true
     };
   },
   created() {
     axios
       .get("http://127.0.0.1:8000/task")
       .then((response) => {
+        if(response.data.data.length != 0){
+          this.doesDataExistInDB = true;
+        }
+        else{
+          this.doesDataExistInDB = false;
+        }
         this.tasks = response.data;
+        // if(response.data)
       })
       .catch((err) => console.log(err));
   },
@@ -82,8 +95,14 @@ export default {
     },
     deleteTask(id){
       axios.delete("http://127.0.0.1:8000/task/" + id)
-        .then((res) => {
-          this.tasks = res.data;
+        .then((response) => {
+          if(response.data.data.length != 0){
+          this.doesDataExistInDB = true;
+        }
+        else{
+          this.doesDataExistInDB = false;
+        }
+          this.tasks = response.data;
         });
     }
   },

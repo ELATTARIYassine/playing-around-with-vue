@@ -73,7 +73,8 @@ export default {
       });
     },
     refresh(tasks) {
-      this.tasks = tasks.data;
+      this.tasks = tasks.res.data;
+      this.doesDataExistInDB = tasks.doesDataExistInDB;
     },
     elToEdit(task) {
       console.log(task);

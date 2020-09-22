@@ -53,7 +53,17 @@ export default {
     addTask(){
       axios.post('http://127.0.0.1:8000/task', 
         {name: this.name})
-        .then(res => this.$emit('task-added', res))
+        .then((response) => {
+          let doesDataExistInDB = false;
+           if(response.data.data.length != 0){
+          doesDataExistInDB = true;
+        }
+        else{
+          doesDataExistInDB = false;
+        }
+          this.$emit('task-added', {res: response, doesDataExistInDB: doesDataExistInDB});
+
+          })
         .catch(error => console.log(error));
       this.name = '';
       $("#exampleModal").modal('hide');

@@ -1964,8 +1964,19 @@ __webpack_require__.r(__webpack_exports__);
 
       axios.post('http://127.0.0.1:8000/task', {
         name: this.name
-      }).then(function (res) {
-        return _this.$emit('task-added', res);
+      }).then(function (response) {
+        var doesDataExistInDB = false;
+
+        if (response.data.data.length != 0) {
+          doesDataExistInDB = true;
+        } else {
+          doesDataExistInDB = false;
+        }
+
+        _this.$emit('task-added', {
+          res: response,
+          doesDataExistInDB: doesDataExistInDB
+        });
       })["catch"](function (error) {
         return console.log(error);
       });
@@ -2148,7 +2159,8 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     refresh: function refresh(tasks) {
-      this.tasks = tasks.data;
+      this.tasks = tasks.res.data;
+      this.doesDataExistInDB = tasks.doesDataExistInDB;
     },
     elToEdit: function elToEdit(task) {
       console.log(task);

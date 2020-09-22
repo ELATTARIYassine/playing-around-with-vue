@@ -2091,10 +2091,26 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      tasks: {}
+      tasks: {},
+      idToEdit: ''
     };
   },
   created: function created() {
@@ -2117,6 +2133,27 @@ __webpack_require__.r(__webpack_exports__);
     },
     refresh: function refresh(tasks) {
       this.tasks = tasks.data;
+    },
+    elToEdit: function elToEdit(task) {
+      console.log(task);
+      this.idToEdit = task.id;
+    },
+    updateTask: function updateTask(task) {
+      var _this3 = this;
+
+      var newVal = this.$refs.taskUpdatedName[0].value;
+
+      if (task.name != newVal) {
+        axios.put('http://127.0.0.1:8000/task/' + task.id, {
+          name: newVal
+        }).then(function (res) {
+          _this3.idToEdit = '';
+          newVal = '';
+          _this3.tasks = res.data;
+        });
+      } else {
+        this.idToEdit = '';
+      }
     }
   }
 });
@@ -38594,8 +38631,63 @@ var render = function() {
                 _vm._l(_vm.tasks.data, function(task) {
                   return _c(
                     "li",
-                    { key: task.id, staticClass: "list-group-item" },
-                    [_vm._v(_vm._s(task.name))]
+                    {
+                      key: task.id,
+                      staticClass:
+                        "list-group-item d-flex justify-content-between align-items-center"
+                    },
+                    [
+                      _vm.idToEdit == task.id
+                        ? [
+                            _c("input", {
+                              ref: "taskUpdatedName",
+                              refInFor: true,
+                              staticClass: "form-control",
+                              attrs: { type: "text" },
+                              domProps: { value: task.name }
+                            })
+                          ]
+                        : [
+                            _vm._v(
+                              "\n              " +
+                                _vm._s(task.name) +
+                                "\n            "
+                            )
+                          ],
+                      _vm._v(" "),
+                      _vm.idToEdit == task.id
+                        ? [
+                            _c("hr", { attrs: { width: "1", size: "500" } }),
+                            _vm._v(" "),
+                            _c(
+                              "button",
+                              {
+                                staticClass: "btn btn-success",
+                                on: {
+                                  click: function($event) {
+                                    return _vm.updateTask(task)
+                                  }
+                                }
+                              },
+                              [_vm._v("update")]
+                            )
+                          ]
+                        : [
+                            _c(
+                              "button",
+                              {
+                                staticClass: "btn btn-info",
+                                on: {
+                                  click: function($event) {
+                                    return _vm.elToEdit(task)
+                                  }
+                                }
+                              },
+                              [_vm._v("edit")]
+                            )
+                          ]
+                    ],
+                    2
                   )
                 }),
                 0

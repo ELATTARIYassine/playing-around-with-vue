@@ -73,7 +73,9 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        //
+        $task->name = $request->name;
+        $task->save();
+        return response()->json(Task::paginate(3));
     }
 
     /**

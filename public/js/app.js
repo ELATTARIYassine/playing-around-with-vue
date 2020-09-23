@@ -1985,9 +1985,6 @@ __webpack_require__.r(__webpack_exports__);
       $('body').removeClass('modal-open');
       $(".modal-backdrop").remove();
     }
-  },
-  mounted: function mounted() {
-    console.log("Component mounted.");
   }
 });
 
@@ -2065,11 +2062,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-/* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {
-    console.log("Component mounted.");
-  }
-});
+/* harmony default export */ __webpack_exports__["default"] = ({});
 
 /***/ }),
 
@@ -2126,12 +2119,30 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       tasks: {},
       idToEdit: "",
-      doesDataExistInDB: true
+      doesDataExistInDB: true,
+      query: ""
     };
   },
   created: function created() {
@@ -2149,13 +2160,33 @@ __webpack_require__.r(__webpack_exports__);
       return console.log(err);
     });
   },
+  computed: {
+    filteredTasks: function filteredTasks() {
+      var _this2 = this;
+
+      var data = {
+        data: ''
+      };
+
+      if (this.query != "") {
+        data.data = this.tasks.data.filter(function (element) {
+          if (element.name.toLowerCase().match(_this2.query)) {
+            return element;
+          }
+        });
+        return data;
+      } else {
+        return this.tasks;
+      }
+    }
+  },
   methods: {
     getResults: function getResults() {
-      var _this2 = this;
+      var _this3 = this;
 
       var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
       axios.get("http://127.0.0.1:8000/task?page=" + page).then(function (response) {
-        _this2.tasks = response.data;
+        _this3.tasks = response.data;
       });
     },
     refresh: function refresh(tasks) {
@@ -2167,7 +2198,7 @@ __webpack_require__.r(__webpack_exports__);
       this.idToEdit = task.id;
     },
     updateTask: function updateTask(task) {
-      var _this3 = this;
+      var _this4 = this;
 
       var newVal = this.$refs.taskUpdatedName[0].value;
 
@@ -2175,25 +2206,25 @@ __webpack_require__.r(__webpack_exports__);
         axios.put("http://127.0.0.1:8000/task/" + task.id, {
           name: newVal
         }).then(function (res) {
-          _this3.idToEdit = "";
+          _this4.idToEdit = "";
           newVal = "";
-          _this3.tasks = res.data;
+          _this4.tasks = res.data;
         });
       } else {
         this.idToEdit = "";
       }
     },
     deleteTask: function deleteTask(id) {
-      var _this4 = this;
+      var _this5 = this;
 
       axios["delete"]("http://127.0.0.1:8000/task/" + id).then(function (response) {
         if (response.data.data.length != 0) {
-          _this4.doesDataExistInDB = true;
+          _this5.doesDataExistInDB = true;
         } else {
-          _this4.doesDataExistInDB = false;
+          _this5.doesDataExistInDB = false;
         }
 
-        _this4.tasks = response.data;
+        _this5.tasks = response.data;
       });
     }
   }
@@ -38655,12 +38686,40 @@ var render = function() {
     _c("div", { staticClass: "row justify-content-center" }, [
       _c("div", { staticClass: "col-md-8" }, [
         _c("div", { staticClass: "card" }, [
-          _c(
-            "div",
-            { staticClass: "card-header" },
-            [_c("add-task", { on: { "task-added": _vm.refresh } })],
-            1
-          ),
+          _c("div", { staticClass: "card-header" }, [
+            _c("div", { staticClass: "row" }, [
+              _c(
+                "div",
+                { staticClass: "col-md-6" },
+                [_c("add-task", { on: { "task-added": _vm.refresh } })],
+                1
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-md-6" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.query,
+                      expression: "query"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: { type: "text", placeholder: "Live Search..." },
+                  domProps: { value: _vm.query },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.query = $event.target.value
+                    }
+                  }
+                })
+              ])
+            ])
+          ]),
           _vm._v(" "),
           _c(
             "div",
@@ -38671,7 +38730,7 @@ var render = function() {
                     _c(
                       "ul",
                       { staticClass: "list-group" },
-                      _vm._l(_vm.tasks.data, function(task) {
+                      _vm._l(_vm.filteredTasks.data, function(task) {
                         return _c(
                           "li",
                           {

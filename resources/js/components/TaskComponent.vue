@@ -4,32 +4,49 @@
       <div class="col-md-8">
         <div class="card">
           <div class="card-header">
-            <add-task @task-added="refresh"></add-task>
+            <div class="row">
+              <div class="col-md-6">
+                <add-task @task-added="refresh"></add-task>
+              </div>
+              <div class="col-md-6">
+                <input
+                  type="text"
+                  v-model="query"
+                  placeholder="Live Search..."
+                  class="form-control"
+                />
+              </div>
+            </div>
           </div>
           <div class="card-body">
             <template v-if="doesDataExistInDB">
               <ul class="list-group">
-              <li
-                class="list-group-item d-flex justify-content-between align-items-center"
-                v-for="task in tasks.data"
-                :key="task.id"
-              >
-                <template v-if="idToEdit == task.id">
-                  <input class="form-control" type="text" :value="task.name" ref="taskUpdatedName" />
-                </template>
-                <template v-else>{{ task.name }}</template>
-                <div>
+                <li
+                  class="list-group-item d-flex justify-content-between align-items-center"
+                  v-for="task in filteredTasks.data"
+                  :key="task.id"
+                >
                   <template v-if="idToEdit == task.id">
-                    <hr width="1" size="500" />
-                    <button class="btn btn-success" @click="updateTask(task)">update</button>
+                    <input
+                      class="form-control"
+                      type="text"
+                      :value="task.name"
+                      ref="taskUpdatedName"
+                    />
                   </template>
-                  <template v-else>
-                    <button class="btn btn-info" @click="elToEdit(task)">edit</button>
-                  </template>
-                  <button class="btn btn-danger" @click="deleteTask(task.id)">delete</button>
-                </div>
-              </li>
-            </ul>
+                  <template v-else>{{ task.name }}</template>
+                  <div>
+                    <template v-if="idToEdit == task.id">
+                      <hr width="1" size="500" />
+                      <button class="btn btn-success" @click="updateTask(task)">update</button>
+                    </template>
+                    <template v-else>
+                      <button class="btn btn-info" @click="elToEdit(task)">edit</button>
+                    </template>
+                    <button class="btn btn-danger" @click="deleteTask(task.id)">delete</button>
+                  </div>
+                </li>
+              </ul>
             </template>
             <template v-else>
               <p>No data found.</p>
@@ -48,23 +65,40 @@ export default {
     return {
       tasks: {},
       idToEdit: "",
-      doesDataExistInDB: true
+      doesDataExistInDB: true,
+      query: "",
     };
   },
   created() {
     axios
       .get("http://127.0.0.1:8000/task")
       .then((response) => {
-        if(response.data.data.length != 0){
+        if (response.data.data.length != 0) {
           this.doesDataExistInDB = true;
-        }
-        else{
+        } else {
           this.doesDataExistInDB = false;
         }
         this.tasks = response.data;
         // if(response.data)
       })
       .catch((err) => console.log(err));
+  },
+  computed: {
+    filteredTasks() {
+      const data = {
+        data: ''
+      }
+      if (this.query != "") {
+        data.data = this.tasks.data.filter((element) => {
+          if(element.name.toLowerCase().match(this.query)){
+            return element;
+          }
+        });
+        return data;
+      } else {
+        return this.tasks;
+      }
+    },
   },
   methods: {
     getResults(page = 1) {
@@ -94,18 +128,16 @@ export default {
         this.idToEdit = "";
       }
     },
-    deleteTask(id){
-      axios.delete("http://127.0.0.1:8000/task/" + id)
-        .then((response) => {
-          if(response.data.data.length != 0){
+    deleteTask(id) {
+      axios.delete("http://127.0.0.1:8000/task/" + id).then((response) => {
+        if (response.data.data.length != 0) {
           this.doesDataExistInDB = true;
-        }
-        else{
+        } else {
           this.doesDataExistInDB = false;
         }
-          this.tasks = response.data;
-        });
-    }
+        this.tasks = response.data;
+      });
+    },
   },
 };
 </script>

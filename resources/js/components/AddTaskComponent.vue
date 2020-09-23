@@ -70,9 +70,6 @@ export default {
       $('body').removeClass('modal-open');
       $(".modal-backdrop").remove();
     }
-  },
-  mounted() {
-    console.log("Component mounted.");
-  },
+  }
 };
 </script>
